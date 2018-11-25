@@ -52,14 +52,15 @@ void updateTotal();
 void printHeader() {
 
 	cout << "Dealer " << setw(10);
+
 	for (int i = 1; i < 8; i++) {
-		cout << setw(10) << "Player" << i;
+		cout << setw(11) << "Player" << i;
 	}
 
 	cout << endl;
 	for (int i = 0; i < 8; i++) {
 		if (i < 7)
-			cout << "-------" << setw(11);
+			cout << "-------" << setw(12);
 		else
 			cout << "-------";
 	}
@@ -79,15 +80,18 @@ string getRank(int rank) {
 	string rankIs;
 
 	if (rankMOD13 == 0)
-		rankIs = "A";
+		rankIs = "A "; // added space to make it look good with cards with rank of 10
 	else if (rankMOD13 == 10)
-		rankIs = "J";
+		rankIs = "J ";
 	else if (rankMOD13 == 11)
-		rankIs = "Q";
+		rankIs = "Q ";
 	else if (rankMOD13 == 12)
-		rankIs = "K";
-	else
+		rankIs = "K ";
+
+	else if (rankMOD13 == 9)
 		rankIs = to_string(rankMOD13 + 1);
+	else
+		rankIs = to_string(rankMOD13 + 1) + " ";
 
 	//cout << endl << "Rank is " << rank << "| Rank % 13 is " << (rank % 13) << " so rank is " << rankIs << endl;
 
@@ -142,7 +146,7 @@ void startRound() {
 	// Display cards dealt
 	for (int i = 0; i < 8; i++) {
 		if (i == 0) // hide first player's card
-			cout << " ?" << setw(10);
+			cout << " ? " << setw(10); // added spaces to make it look good with cards with rank of 10
 		else if (i < 7)
 			cout << getSuit(players[i][0]) << getRank(players[i][0]) << setw(10);
 		else
@@ -178,8 +182,10 @@ void updateTotal() {
 		}
 		else 
 			sumIs += cardIs;
-		cout << "Player 1 card index " << rawCard << endl;
-		cout << "Player 1 card value " << cardIs << endl;
+
+		//cout << "Player 1 card index " << rawCard << endl;
+		//cout << "Player 1 card value " << cardIs << endl;
+
 		cout << endl;
 
 	}
