@@ -54,10 +54,9 @@ string getRank(int);
 string getSuit(int);
 void printHeader();
 void startRound();
+void updateTotal();
 
 string getRank(int rank) {
-
-	int rawRank = rank;
 
 	rank %= 13;
 
@@ -107,20 +106,31 @@ string getSuit(int suit) {
 
 void printHeader() {
 
-	cout << "dlr";
+	cout << "Dealer " << setw(10);
 	for (int i = 1; i < 8; i++) {
-		cout << setw(6) << i;
+		cout << setw(10) << "Player" << i;
 	}
 
 	cout << endl;
 	for (int i = 0; i < 8; i++) {
 		if (i < 7)
-			cout << "---" << setw(6);
+			cout << "-------" << setw(11);
 		else
-			cout << "---";
+			cout << "-------";
 	}
 	cout << endl;
 
+}
+
+int indexToCard(int index) {
+
+	int cardIs = ( (index + 1) % 13 );
+
+	//if (cardIs > 10) {
+	//	cardIs = 10;
+	//}
+
+	return cardIs;
 }
 
 //Deal two cards to each player
@@ -132,7 +142,7 @@ void startRound() {
 		vector <int> newPlayer;
 		players.push_back(newPlayer);
 		players.at(x).push_back(deck[x]);
-
+		players.at(x).push_back(deck[x + 8]);
 	}
 
 	//// Display cards dealt
@@ -150,14 +160,53 @@ void startRound() {
 	// Display cards dealt
 	for (int i = 0; i < 8; i++) {
 
-		if (i < 7)
-			cout << getSuit(players[i][0]) << getRank(players[i][0]) << setw(5);
+		if (i == 0)
+			cout << " ?" << setw(10);
+		else if (i < 7)
+			cout << getSuit(indexToCard(players[i][0])) << getRank(indexToCard(players[i][0])) << setw(10);
 		else
-			cout << getSuit(players[i][0]) << getRank(players[i][0]);
+			cout << getSuit(indexToCard(players[i][0])) << getRank(indexToCard(players[i][0]));
+	}	
+	cout << endl;
+	for (int i = 0; i < 8; i++) {
+
+		if (i < 7)
+			cout << getSuit(indexToCard(players[i][1])) << getRank(indexToCard(players[i][1])) << setw(10);
+		else
+			cout << getSuit(indexToCard(players[i][1])) << getRank(indexToCard(players[i][1]));
 	}
+
+	cout << endl;
 
 		//getRank(deck[i]);
 		//getSuit(deck[i]);
+}
+
+void updateTotal() {
+
+	cout << endl << endl;
+
+	int sumIs = 0;
+
+	//Display total for a player
+	for (int y = 0; y < 2; y++) {
+
+		int rawCard = players[1][y];
+		int cardIs = indexToCard(players[1][y]);
+
+		if (cardIs > 10) {
+			sumIs += 10;
+			cardIs = 10;
+		}
+		else 
+			sumIs += cardIs;
+		cout << "Current card raw " << rawCard << endl;
+		cout << "Current card is  " << cardIs << endl;
+
+	}
+
+	cout << setw(13) << sumIs << setw(80) << "totals" << endl;
+
 }
 
 int main()
@@ -187,11 +236,11 @@ int main()
 
 	startRound();
 
+	updateTotal();
+
 	do {
 
 		cout << endl;
-
-
 		cout << "\nPlay again? (y/n)" << endl;
 		cin >> again;
 
