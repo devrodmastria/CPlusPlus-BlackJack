@@ -38,16 +38,9 @@ using namespace std;
 
 */
 
-vector<int> deck(52);
-vector<int> dealer;
-vector<int> playerOne;
-vector<int> playerTwo;
-vector<int> playerThree;
-vector<int> playerFour;
-vector<int> playerFive;
-vector<int> playerSix;
-vector<int> playerSeven;
+const int NUMBER_OF_CARDS = 52;
 
+vector<int> deck(52);
 vector<vector<int>> players;
 
 string getRank(int);
@@ -56,14 +49,37 @@ void printHeader();
 void startRound();
 void updateTotal();
 
+void printHeader() {
+
+	cout << "Dealer " << setw(10);
+	for (int i = 1; i < 8; i++) {
+		cout << setw(10) << "Player" << i;
+	}
+
+	cout << endl;
+	for (int i = 0; i < 8; i++) {
+		if (i < 7)
+			cout << "-------" << setw(11);
+		else
+			cout << "-------";
+	}
+	cout << endl;
+
+}
+
+int indexToCard(int index) {
+	int cardIs = ((index % 13) + 1);
+	return cardIs;
+}
+
 string getRank(int rank) {
 
-	rank %= 13;
+	rank %= 13; // card index MOD 13
 
 	string rankIs;
 
 	if (rank == 0)
-		rankIs = "A";
+		cout << "A";
 	else if (rank == 10)
 		rankIs = "J";
 	else if (rank == 11)
@@ -71,17 +87,16 @@ string getRank(int rank) {
 	else if (rank == 12)
 		rankIs = "K";
 	else
-		rankIs = to_string(rank);
+		rankIs = to_string(rank + 1);
 
 	return rankIs;
 }
 
 string getSuit(int suit) {
 
-	suit /= 13;
+	suit /= 13; // card index DIVIDED by 13
 
 	string suitIs;
-
 	if (suit == 0)
 		suitIs = "C";
 	else if (suit == 1)
@@ -104,35 +119,6 @@ string getSuit(int suit) {
 
 }
 
-void printHeader() {
-
-	cout << "Dealer " << setw(10);
-	for (int i = 1; i < 8; i++) {
-		cout << setw(10) << "Player" << i;
-	}
-
-	cout << endl;
-	for (int i = 0; i < 8; i++) {
-		if (i < 7)
-			cout << "-------" << setw(11);
-		else
-			cout << "-------";
-	}
-	cout << endl;
-
-}
-
-int indexToCard(int index) {
-
-	int cardIs = ( (index + 1) % 13 );
-
-	//if (cardIs > 10) {
-	//	cardIs = 10;
-	//}
-
-	return cardIs;
-}
-
 //Deal two cards to each player
 void startRound() {
 
@@ -141,45 +127,35 @@ void startRound() {
 
 		vector <int> newPlayer;
 		players.push_back(newPlayer);
+
+		// deal two cards per player
 		players.at(x).push_back(deck[x]);
 		players.at(x).push_back(deck[x + 8]);
+
+		//cout << "deck[x] " << setw(3) << deck[x] << " deck[x + 8] " << setw(3) << deck[x + 8] << " deck[0] " << deck[0] << " deck[51] " << deck[51] << endl;
 	}
 
-	//// Display cards dealt
-	//for (int i = 0; i < 8; i++) {
-
-	//	if (i < 7)
-	//		cout << players[i][0] << setw(6);
-	//	else
-	//		cout << players[i][0];
-	//}
-
-	//cout << endl;
-
+	cout << endl;
 
 	// Display cards dealt
 	for (int i = 0; i < 8; i++) {
-
-		if (i == 0)
+		if (i == 0) // hide first player's card
 			cout << " ?" << setw(10);
 		else if (i < 7)
-			cout << getSuit(indexToCard(players[i][0])) << getRank(indexToCard(players[i][0])) << setw(10);
+			cout << getSuit(players[i][0]) << getRank(players[i][0]) << setw(10);
 		else
-			cout << getSuit(indexToCard(players[i][0])) << getRank(indexToCard(players[i][0]));
+			cout << getSuit(players[i][0]) << getRank(players[i][0]);
 	}	
 	cout << endl;
+
 	for (int i = 0; i < 8; i++) {
-
 		if (i < 7)
-			cout << getSuit(indexToCard(players[i][1])) << getRank(indexToCard(players[i][1])) << setw(10);
+			cout << getSuit(players[i][1]) << getRank(players[i][1]) << setw(10);
 		else
-			cout << getSuit(indexToCard(players[i][1])) << getRank(indexToCard(players[i][1]));
+			cout << getSuit(players[i][1]) << getRank(players[i][1]);
 	}
-
 	cout << endl;
 
-		//getRank(deck[i]);
-		//getSuit(deck[i]);
 }
 
 void updateTotal() {
@@ -200,8 +176,9 @@ void updateTotal() {
 		}
 		else 
 			sumIs += cardIs;
-		cout << "Current card raw " << rawCard << endl;
-		cout << "Current card is  " << cardIs << endl;
+		cout << "Player 1 card index " << rawCard << endl;
+		cout << "Player 1 card value " << cardIs << endl;
+		cout << endl;
 
 	}
 
@@ -217,7 +194,7 @@ int main()
 	printHeader();
 
 	// Initialize cards - 0-12 Clubs / 13-25 Diamonds / 26-38 Hearts / 39-51 Spades
-	for (int i = 0; i < 52; i++) {
+	for (int i = 0; i < NUMBER_OF_CARDS; i++) {
 
 		deck[i] = i;
 
@@ -225,9 +202,9 @@ int main()
 
 	// Shuffle cards
 	srand(time(NULL));
-	for (int i = 0; i < 52; i++) {
+	for (int i = 0; i < NUMBER_OF_CARDS; i++) {
 
-		int index = rand() % 52;
+		int index = rand() % NUMBER_OF_CARDS;
 		int temp = deck[i];
 		deck[i] = deck[index];
 		deck[index] = temp;
