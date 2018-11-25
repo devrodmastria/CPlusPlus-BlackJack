@@ -74,20 +74,22 @@ int indexToCard(int index) {
 
 string getRank(int rank) {
 
-	rank %= 13; // card index MOD 13
+	int rankMOD13 = rank % 13; // card index MOD 13
 
 	string rankIs;
 
-	if (rank == 0)
-		cout << "A";
-	else if (rank == 10)
+	if (rankMOD13 == 0)
+		rankIs = "A";
+	else if (rankMOD13 == 10)
 		rankIs = "J";
-	else if (rank == 11)
+	else if (rankMOD13 == 11)
 		rankIs = "Q";
-	else if (rank == 12)
+	else if (rankMOD13 == 12)
 		rankIs = "K";
 	else
-		rankIs = to_string(rank + 1);
+		rankIs = to_string(rankMOD13 + 1);
+
+	//cout << endl << "Rank is " << rank << "| Rank % 13 is " << (rank % 13) << " so rank is " << rankIs << endl;
 
 	return rankIs;
 }
