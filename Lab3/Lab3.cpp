@@ -168,29 +168,44 @@ void updateTotal() {
 
 	cout << endl << endl;
 
-	int sumIs = 0;
+	vector <int> playerTotal(8);
 
-	//Display total for a player
-	for (int y = 0; y < 2; y++) {
+	cout << " Player one card quantity: " << players[1].size() << endl;
 
-		int rawCard = players[1][y];
-		int cardIs = indexToCard(players[1][y]);
+	//Display total for each player
+	for (int x = 0; x < 8; x++) { // first round
 
-		if (cardIs > 10) {
-			sumIs += 10;
-			cardIs = 10;
+		int cardsQty = players[x].size();
+
+		int cardIndex = 0;
+
+		while (cardIndex < cardsQty) {
+
+			int cardIs = indexToCard(players[x][cardIndex]);
+
+			if (cardIs > 10) {
+				playerTotal[x] += 10;
+			}
+			else
+				playerTotal[x] += cardIs;
+
+			cardIndex++;
+
 		}
-		else 
-			sumIs += cardIs;
-
-		//cout << "Player 1 card index " << rawCard << endl;
-		//cout << "Player 1 card value " << cardIs << endl;
-
-		cout << endl;
 
 	}
 
-	cout << setw(13) << sumIs << setw(80) << "totals" << endl;
+	cout << endl;
+
+	cout << setw(14) 
+		<< playerTotal[1] << setw(12)
+		<< playerTotal[2] << setw(12)
+		<< playerTotal[3] << setw(12)
+		<< playerTotal[4] << setw(12)
+		<< playerTotal[5] << setw(12)
+		<< playerTotal[6] << setw(12)
+		<< playerTotal[7] << setw(12)
+		<< "totals" << endl;
 
 }
 
