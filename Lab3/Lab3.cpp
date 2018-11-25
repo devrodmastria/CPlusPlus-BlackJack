@@ -1,4 +1,4 @@
-// Program name: Lab 3 - BlackJack : game of cards
+﻿// Program name: Lab 3 - BlackJack : game of cards
 // Programmer: Rod Mesquita
 // Date: 11/23/2018
 // Honor code: I have neither given nor received unauthorized aid in completing this work, nor have I presented someone else's work as my own.
@@ -7,6 +7,10 @@
 #include <iostream>
 #include <ctime>
 #include <vector> // no need to determinze size at definition
+#include <clocale> // to display cards symbols
+#include <stdio.h>
+#include <iomanip>
+#include <string>
 
 using namespace std;
 
@@ -26,68 +30,172 @@ using namespace std;
 
 	Tools needed: 
 		
-		Random number generator - answer: Random Number Generation Examples.pdf from Canvas
+		Random number generator - answer: Random Number Generation Examples.pdf from Canvas OK
 
-		Loop to prompt user for input
+		Do-while loop to prompt user for input OK
 
-		Special characters?
+		Special characters NOPE
 
 */
 
-void displayRank(int rank) {
+vector<int> deck(52);
+vector<int> dealer;
+vector<int> playerOne;
+vector<int> playerTwo;
+vector<int> playerThree;
+vector<int> playerFour;
+vector<int> playerFive;
+vector<int> playerSix;
+vector<int> playerSeven;
+
+vector<vector<int>> players;
+
+string getRank(int);
+string getSuit(int);
+void printHeader();
+void startRound();
+
+string getRank(int rank) {
+
+	int rawRank = rank;
+
+	rank %= 13;
+
+	string rankIs;
+
 	if (rank == 0)
-		cout << " Ace of ";
+		rankIs = "A";
 	else if (rank == 10)
-		cout << "Jack of ";
+		rankIs = "J";
 	else if (rank == 11)
-		cout << "Queen of ";
+		rankIs = "Q";
 	else if (rank == 12)
-		cout << "King of ";
+		rankIs = "K";
 	else
-		cout << rank << "  of ";
+		rankIs = to_string(rank);
+
+	return rankIs;
 }
 
-void displaySuit(int suit) {
+string getSuit(int suit) {
+
+	suit /= 13;
+
+	string suitIs;
 
 	if (suit == 0)
-		cout << " Clubs" << endl;
+		suitIs = "C";
 	else if (suit == 1)
-		cout << "Diamonds" << endl;
+		suitIs = "D";
 	else if (suit == 2)
-		cout << "Hearts" << endl;
+		suitIs = "H";
 	else if (suit == 3)
-		cout << "Spades" << endl;
+		suitIs = "S";
 
+	//if (suit == 0)
+	//	cout << "Clubs \u2667" << endl;
+	//else if (suit == 1)
+	//	cout << "Diamonds \u2662" << endl;
+	//else if (suit == 2)
+	//	cout << "Hearts \u2661" << endl;
+	//else if (suit == 3)
+	//	cout << "Spades \u2664" << endl;
+
+	return suitIs;
+
+}
+
+void printHeader() {
+
+	cout << "dlr";
+	for (int i = 1; i < 8; i++) {
+		cout << setw(6) << i;
+	}
+
+	cout << endl;
+	for (int i = 0; i < 8; i++) {
+		if (i < 7)
+			cout << "---" << setw(6);
+		else
+			cout << "---";
+	}
+	cout << endl;
+
+}
+
+//Deal two cards to each player
+void startRound() {
+
+	// initialize players and dealer
+	for (int x = 0; x < 8; x++) {
+
+		vector <int> newPlayer;
+		players.push_back(newPlayer);
+		players.at(x).push_back(deck[x]);
+
+	}
+
+	//// Display cards dealt
+	//for (int i = 0; i < 8; i++) {
+
+	//	if (i < 7)
+	//		cout << players[i][0] << setw(6);
+	//	else
+	//		cout << players[i][0];
+	//}
+
+	//cout << endl;
+
+
+	// Display cards dealt
+	for (int i = 0; i < 8; i++) {
+
+		if (i < 7)
+			cout << getSuit(players[i][0]) << getRank(players[i][0]) << setw(5);
+		else
+			cout << getSuit(players[i][0]) << getRank(players[i][0]);
+	}
+
+		//getRank(deck[i]);
+		//getSuit(deck[i]);
 }
 
 int main()
 {
-	vector<int> playerDecks;
-	vector<int> mainDeck(52);
+
+	char again;
+
+	printHeader();
 
 	// Initialize cards - 0-12 Clubs / 13-25 Diamonds / 26-38 Hearts / 39-51 Spades
 	for (int i = 0; i < 52; i++) {
 
-		mainDeck[i] = i;
+		deck[i] = i;
 
 	}
 
 	// Shuffle cards
-	srand(time(0));
+	srand(time(NULL));
 	for (int i = 0; i < 52; i++) {
 
 		int index = rand() % 52;
-		int temp = mainDeck[i];
-		mainDeck[i] = mainDeck[index];
-		mainDeck[index] = temp;
+		int temp = deck[i];
+		deck[i] = deck[index];
+		deck[index] = temp;
 
 	}
 
-	// Display first four cards
-	for (int i = 0; i < 4; i++) {
-		displayRank(mainDeck[i] % 13);
-		displaySuit(mainDeck[i] / 13);
-	}
+	startRound();
 
+	do {
+
+		cout << endl;
+
+
+		cout << "\nPlay again? (y/n)" << endl;
+		cin >> again;
+
+	} while (again == 'y' || again == 'Y');
+	
 	return 0;
 }
