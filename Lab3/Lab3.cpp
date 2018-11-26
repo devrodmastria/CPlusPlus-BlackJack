@@ -10,7 +10,7 @@
 #include <stdio.h>
 #include <iomanip>
 #include <string>
-#include "stdafx.h" // to display unicode characters for card suits
+#include <windows.h>
 
 using namespace std;
 
@@ -41,6 +41,7 @@ using namespace std;
 const int NUMBER_OF_CARDS = 52;
 
 int currentPlayer = 1;
+int roundIs = 1;
 
 vector<int> deck(52);
 vector<vector<int>> players;
@@ -50,6 +51,17 @@ string getSuit(int);
 void printHeader();
 void startRound();
 void updateTotal();
+
+void gotoxy(int h, int w) {
+
+	HANDLE hConsolse = GetStdHandle(STD_OUTPUT_HANDLE);
+
+	if (INVALID_HANDLE_VALUE != hConsolse) {
+		COORD pos = { h, w };
+		SetConsoleCursorPosition(hConsolse, pos);
+	}
+	return;
+}
 
 void printHeader() {
 
@@ -173,8 +185,6 @@ void startRound() {
 
 void updateTotal() {
 
-	cout << endl << endl;
-
 	vector <int> playerTotal(8);
 	//const char *spades = u8"\u2664";
 	//cout << " Player one card quantity: " << players[1].size() << endl;
@@ -203,8 +213,7 @@ void updateTotal() {
 
 	}
 
-	cout << endl;
-
+	gotoxy(0, 15);
 	cout << setw(14) 
 		<< playerTotal[1] << setw(12)
 		<< playerTotal[2] << setw(12)
@@ -217,6 +226,44 @@ void updateTotal() {
 
 }
 
+int getX(int i) {
+	int xIs = 0;
+
+	switch (i) {
+		case 0:
+			xIs = 0;
+			break;
+		case 1:
+			xIs = 12;
+			break;
+		case 2:
+			xIs = 24;
+			break;
+		case 3:
+			xIs = 36;
+			break;
+		case 4:
+			xIs = 48;
+			break;
+		case 5: 
+			xIs = 60;
+			break;
+		case 6:
+			xIs = 72;
+			break;
+		case 7:
+			xIs = 84;
+			break;
+		deafult:
+			xIs = 96;
+			break;
+	}
+
+	//cout << "getX:" << xIs << endl;
+
+	return xIs;
+}
+
 int anotherCard(bool getNewCard) {
 
 	if (getNewCard) {
@@ -226,28 +273,32 @@ int anotherCard(bool getNewCard) {
 		// display new card
 		for (int i = 0; i < 8; i++) {
 
+			gotoxy(getX(i), (roundIs + 4));
 
-			if (i < 7) {
-
-				if (i == currentPlayer)
-					cout << getSuit(players[i][players[i].size() - 1]) << getRank(players[i][players[i].size() - 1]) << setw(10);
-				else
-					cout << "      " << setw(10);
+			if (i == currentPlayer){
+				cout << getSuit(players[i][players[i].size() - 1]) << getRank(players[i][players[i].size() - 1]);
 			}
-			else
+			else {
+				cout << "      ";
+			}
 
-				if (i == currentPlayer)
-					cout << getSuit(players[i][players[i].size() - 1]) << getRank(players[i][players[i].size() - 1]);
-				else
-					cout << "      ";
 		}
 
 		cout << endl;
 		// end of display new card
 
+		if (currentPlayer == 7) {
+			currentPlayer = 1;
+			roundIs += 1;
+		}
+		else
+			currentPlayer += 1;
+
 	}
-	else if (currentPlayer == 7)
+	else if (currentPlayer == 7) {
 		currentPlayer = 1;
+		roundIs += 1;
+	}
 	else
 		currentPlayer += 1;
 
@@ -282,7 +333,6 @@ int main()
 
 		updateTotal();
 
-		cout << endl;
 		cout << "Another card for player " << currentPlayer << "? (y/n)" << endl;
 		cin >> getNewCard;
 
