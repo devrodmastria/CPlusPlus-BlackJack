@@ -89,6 +89,9 @@ int indexToCard(int index) {
 
 string getRank(int rank) {
 
+	if (rank == -1)
+		return "  ";
+
 	int rankMOD13 = rank % 13; // card index MOD 13
 
 	string rankIs;
@@ -113,9 +116,11 @@ string getRank(int rank) {
 }
 
 string getSuit(int suit) {
+	
+	if (suit == -1)
+		return " ";
 
 	suit /= 13; // card index DIVIDED by 13
-
 	string suitIs;
 	if (suit == 0)
 		suitIs = "C";
@@ -147,10 +152,12 @@ void startRound() {
 	// initialize players and dealer
 	for (int x = 0; x < 8; x++) {
 
+		// create 2 dimensional vector for players and their cards
 		vector <int> newPlayer;
 		players.push_back(newPlayer);
 
 		// deal two cards per player
+		// transfer card from deck to player
 		players.at(x).push_back(deck[0]);
 		deck.erase(deck.begin());
 		players.at(x).push_back(deck[0]);
@@ -158,9 +165,6 @@ void startRound() {
 
 	}
 	//cout << "Deck size after: " << deck.size() << endl;
-
-
-	cout << endl;
 
 	// Display cards dealt
 	for (int i = 0; i < 8; i++) {
@@ -186,6 +190,7 @@ void startRound() {
 void updateTotal() {
 
 	vector <int> playerTotal(8);
+
 	//const char *spades = u8"\u2664";
 	//cout << " Player one card quantity: " << players[1].size() << endl;
 	//printf("\x2665\n");
@@ -264,23 +269,37 @@ int getX(int i) {
 	return xIs;
 }
 
+void initializeNextRound() {
+	// create placeholder cards for each player
+	for (int i = 0; i < 8; i++) {
+		players.at(i).push_back(-1);
+	}
+}
+
 int anotherCard(bool getNewCard) {
 
 	if (getNewCard) {
+
+		// transfer card from deck to player
 		players.at(currentPlayer).push_back(deck[0]);
 		deck.erase(deck.begin());
 
 		// display new card
 		for (int i = 0; i < 8; i++) {
 
-			gotoxy(getX(i), (roundIs + 4));
+			gotoxy(getX(i), (roundIs + 3));
 
-			if (i == currentPlayer){
-				cout << getSuit(players[i][players[i].size() - 1]) << getRank(players[i][players[i].size() - 1]);
-			}
-			else {
-				cout << "      ";
-			}
+			int x = i;
+			int y = players[i].size() - 1;
+
+			cout << getSuit(players[x][y]) << getRank(players[x][y]);
+
+			//if (i == currentPlayer){
+			//	cout << getSuit(players[i][players[i].size() - 1]) << getRank(players[i][players[i].size() - 1]);
+			//}
+			//else {
+			//	cout << "      ";
+			//}
 
 		}
 
@@ -290,6 +309,7 @@ int anotherCard(bool getNewCard) {
 		if (currentPlayer == 7) {
 			currentPlayer = 1;
 			roundIs += 1;
+			initializeNextRound();
 		}
 		else
 			currentPlayer += 1;
@@ -298,6 +318,7 @@ int anotherCard(bool getNewCard) {
 	else if (currentPlayer == 7) {
 		currentPlayer = 1;
 		roundIs += 1;
+		initializeNextRound();
 	}
 	else
 		currentPlayer += 1;
@@ -328,11 +349,13 @@ int main()
 	}
 
 	startRound();
+	initializeNextRound();
 
 	do {
 
 		updateTotal();
 
+		gotoxy(0, 17);
 		cout << "Another card for player " << currentPlayer << "? (y/n)" << endl;
 		cin >> getNewCard;
 
