@@ -36,6 +36,8 @@ using namespace std;
 
 		Special characters NOPE
 
+		... and much more.
+
 */
 
 const int NUMBER_OF_CARDS = 52;
@@ -51,6 +53,7 @@ string getSuit(int);
 void printHeader();
 void startRound();
 void updateTotal();
+int main();
 
 void gotoxy(int h, int w) {
 
@@ -65,7 +68,7 @@ void gotoxy(int h, int w) {
 
 void printHeader() {
 
-	cout << "Dealer " << setw(10);
+	cout << " Dealer" << setw(9);
 
 	for (int i = 1; i < 8; i++) {
 		cout << setw(11) << "Player" << i;
@@ -131,6 +134,9 @@ string getSuit(int suit) {
 	else if (suit == 3)
 		suitIs = "S";
 
+	// Below are some of my failed attempts to display the icons for the suits using Unicode.
+	//const char *spades = u8"\u2664";
+	//printf("\x2665\n");
 	//if (suit == 0)
 	//	cout << "Clubs \u2667" << endl;
 	//else if (suit == 1)
@@ -144,8 +150,8 @@ string getSuit(int suit) {
 
 }
 
-//Deal two cards to each player
-void startRound() {
+void startRound() { //Deal two cards to each player
+	
 
 	//cout << "Deck size before: " << deck.size() << endl;
 
@@ -187,21 +193,25 @@ void startRound() {
 
 }
 
-void winnerWinnerChickenDinner(int total, int player) {
+bool winnerWinnerChickenDinner(int total, int player) {
 
 	// for each player, if > 21, then lose
 	// if == 21, then win
 
-	gotoxy(0, 19);
+	gotoxy(0, 20);
+
 	if (total > 21) {
 		// Boo you lost it
-
-		cout << "Player " << player << " lost the game :(";
+		cout << "Player " << player << " lost the game :(                ";
+		
+		// SET value of 99 to player's card deck so that program can detect and exclude player from future rounds
+		players[player][0] = 99;
+		return false;
 	}
 	else if (total == 21) {
 		// Whoop Whoop! Winner winner chicken dinner!
-
-		cout << "Player " << player << " Winner winner chicken dinner!";
+		cout << "Player " << player << " -> Winner Winner Chicken Dinner!" << endl;
+		return true;
 	}
 }
 
@@ -209,46 +219,69 @@ void updateTotal() {
 
 	vector <int> playerTotal(8);
 
-	//const char *spades = u8"\u2664";
-	//cout << " Player one card quantity: " << players[1].size() << endl;
-	//printf("\x2665\n");
+	bool chickenDinner = false;
 
-	//Display total for each player
-	for (int x = 0; x < 8; x++) { // first round
+	// calculate total for each active player
+	for (int playerIndex = 0; playerIndex < 8; playerIndex++) {
 
-		int cardsQty = players[x].size();
+		if (players[playerIndex][0] != 99) {
 
-		int cardIndex = 0;
+			int cardsQty = players[playerIndex].size();
 
-		while (cardIndex < cardsQty) {
+			int cardIndex = 0;
 
-			int cardIs = indexToCard(players[x][cardIndex]);
+			while (cardIndex < cardsQty) {
 
-			if (cardIs > 10) {
-				playerTotal[x] += 10;
-				winnerWinnerChickenDinner(playerTotal[x], x);
+				int cardIs = indexToCard(players[playerIndex][cardIndex]);
+
+				if (cardIs > 10) {
+					playerTotal[playerIndex] += 10;
+					chickenDinner = winnerWinnerChickenDinner(playerTotal[playerIndex], playerIndex);
+				}
+				else {
+					playerTotal[playerIndex] += cardIs;
+					chickenDinner = winnerWinnerChickenDinner(playerTotal[playerIndex], playerIndex);
+				}
+
+				cardIndex++;
+
 			}
-			else {
-				playerTotal[x] += cardIs;
-				winnerWinnerChickenDinner(playerTotal[x], x);
-			}
-
-			cardIndex++;
-
 		}
-
 	}
 
-	gotoxy(0, 15);
-	cout << setw(14) 
-		<< playerTotal[1] << setw(12)
-		<< playerTotal[2] << setw(12)
-		<< playerTotal[3] << setw(12)
-		<< playerTotal[4] << setw(12)
-		<< playerTotal[5] << setw(12)
-		<< playerTotal[6] << setw(12)
-		<< playerTotal[7] << setw(12)
-		<< "totals" << endl;
+	// display totals only for active players
+	for (int playerIndex = 1; playerIndex < 8; playerIndex++) {
+		gotoxy((playerIndex * 12), 15);
+		if (players[playerIndex][0] != 99) {
+			cout << playerTotal[playerIndex];
+		}
+		else { // players who lost go here
+			cout << " X ";
+		}
+	}
+
+	gotoxy((8*12), 15);
+	cout << "totals" << endl;
+
+	// Solution to bonus question: start over without restarting program
+	//if (chickenDinner) {
+	//	char startAgain = 'n';
+	//	gotoxy(0,21);
+	//	cout << "Start new game? (y/n)";
+	//	cin >> startAgain;
+	//	if (startAgain == 'y') {
+	//		// STOP game and ask to start over
+	//		// clear vectors, clear screen, call main()
+
+	//		currentPlayer = 1;
+	//		roundIs = 1;
+	//		//deck.clear();
+	//		//players.clear();
+	//		system("cls");
+	//		main();
+
+	//	}
+	//}
 
 }
 
@@ -320,22 +353,33 @@ int anotherCard(bool getNewCard) {
 		cout << endl;
 		// end of display new card
 
-		if (currentPlayer == 7) {
-			currentPlayer = 1;
-			roundIs += 1;
-			initializeNextRound();
-		}
-		else
-			currentPlayer += 1;
-
 	}
-	else if (currentPlayer == 7) {
-		currentPlayer = 1;
+
+	for (int i = 1; i < 8; i++) {
+
+		if ((currentPlayer + i) < players.size()) {
+			if (players[currentPlayer + i][0] != 99) {
+				currentPlayer += i;
+				break;
+			}
+		}
+		else {
+
+			for (int i = 1; i < 8; i++) {
+			
+				if (players[i][0] != 99) {
+					currentPlayer = i;
+					break;
+				}
+			
+			}
+		}
+	}
+
+	if (currentPlayer == 7) {
 		roundIs += 1;
 		initializeNextRound();
-	}
-	else
-		currentPlayer += 1;
+	} 
 
 	return currentPlayer;
 }
@@ -373,6 +417,8 @@ int main()
 		gotoxy(0, 17);
 		cout << "Another card for player " << currentPlayer << "? (y/n)" << endl;
 		cin >> getNewCard;
+		gotoxy(0, 0);
+		cout << " ";
 
 		if (getNewCard == 'y')
 			anotherCard(true);
