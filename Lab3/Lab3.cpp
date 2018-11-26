@@ -7,10 +7,10 @@
 #include <iostream>
 #include <ctime>
 #include <vector> // no need to determinze size at definition
-#include <clocale> // to display cards symbols
 #include <stdio.h>
 #include <iomanip>
 #include <string>
+#include "stdafx.h" // to display unicode characters for card suits
 
 using namespace std;
 
@@ -39,6 +39,8 @@ using namespace std;
 */
 
 const int NUMBER_OF_CARDS = 52;
+
+int currentPlayer = 1;
 
 vector<int> deck(52);
 vector<vector<int>> players;
@@ -128,6 +130,8 @@ string getSuit(int suit) {
 //Deal two cards to each player
 void startRound() {
 
+	//cout << "Deck size before: " << deck.size() << endl;
+
 	// initialize players and dealer
 	for (int x = 0; x < 8; x++) {
 
@@ -135,11 +139,14 @@ void startRound() {
 		players.push_back(newPlayer);
 
 		// deal two cards per player
-		players.at(x).push_back(deck[x]);
-		players.at(x).push_back(deck[x + 8]);
+		players.at(x).push_back(deck[0]);
+		deck.erase(deck.begin());
+		players.at(x).push_back(deck[0]);
+		deck.erase(deck.begin());
 
-		//cout << "deck[x] " << setw(3) << deck[x] << " deck[x + 8] " << setw(3) << deck[x + 8] << " deck[0] " << deck[0] << " deck[51] " << deck[51] << endl;
 	}
+	//cout << "Deck size after: " << deck.size() << endl;
+
 
 	cout << endl;
 
@@ -169,8 +176,9 @@ void updateTotal() {
 	cout << endl << endl;
 
 	vector <int> playerTotal(8);
-
-	cout << " Player one card quantity: " << players[1].size() << endl;
+	//const char *spades = u8"\u2664";
+	//cout << " Player one card quantity: " << players[1].size() << endl;
+	//printf("\x2665\n");
 
 	//Display total for each player
 	for (int x = 0; x < 8; x++) { // first round
@@ -209,20 +217,54 @@ void updateTotal() {
 
 }
 
+int anotherCard(bool getNewCard) {
+
+	if (getNewCard) {
+		players.at(currentPlayer).push_back(deck[0]);
+		deck.erase(deck.begin());
+
+		// display new card
+		for (int i = 0; i < 8; i++) {
+
+
+			if (i < 7) {
+
+				if (i == currentPlayer)
+					cout << getSuit(players[i][players[i].size() - 1]) << getRank(players[i][players[i].size() - 1]) << setw(10);
+				else
+					cout << "      " << setw(10);
+			}
+			else
+
+				if (i == currentPlayer)
+					cout << getSuit(players[i][players[i].size() - 1]) << getRank(players[i][players[i].size() - 1]);
+				else
+					cout << "      ";
+		}
+
+		cout << endl;
+		// end of display new card
+
+	}
+	else if (currentPlayer == 7)
+		currentPlayer = 1;
+	else
+		currentPlayer += 1;
+
+	return currentPlayer;
+}
+
 int main()
 {
 
-	char again;
+	char getNewCard = 'n';
 
 	printHeader();
 
 	// Initialize cards - 0-12 Clubs / 13-25 Diamonds / 26-38 Hearts / 39-51 Spades
-	for (int i = 0; i < NUMBER_OF_CARDS; i++) {
-
+	for (int i = 0; i < NUMBER_OF_CARDS; i++)
 		deck[i] = i;
-
-	}
-
+	
 	// Shuffle cards
 	srand(time(NULL));
 	for (int i = 0; i < NUMBER_OF_CARDS; i++) {
@@ -236,15 +278,20 @@ int main()
 
 	startRound();
 
-	updateTotal();
-
 	do {
 
-		cout << endl;
-		cout << "\nPlay again? (y/n)" << endl;
-		cin >> again;
+		updateTotal();
 
-	} while (again == 'y' || again == 'Y');
+		cout << endl;
+		cout << "Another card for player " << currentPlayer << "? (y/n)" << endl;
+		cin >> getNewCard;
+
+		if (getNewCard == 'y')
+			anotherCard(true);
+		else if (getNewCard == 'n')
+			anotherCard(false);
+
+	} while (getNewCard == 'y' || getNewCard == 'n');
 	
 	return 0;
 }
