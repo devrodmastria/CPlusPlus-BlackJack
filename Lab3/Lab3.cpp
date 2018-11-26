@@ -6,7 +6,7 @@
 #include "pch.h"
 #include <iostream>
 #include <ctime>
-#include <vector> // no need to determinze size at definition
+#include <vector> // no need to determine size at definition
 #include <stdio.h>
 #include <iomanip>
 #include <string>
@@ -187,6 +187,24 @@ void startRound() {
 
 }
 
+void winnerWinnerChickenDinner(int total, int player) {
+
+	// for each player, if > 21, then lose
+	// if == 21, then win
+
+	gotoxy(0, 19);
+	if (total > 21) {
+		// Boo you lost it
+
+		cout << "Player " << player << " lost the game :(";
+	}
+	else if (total == 21) {
+		// Whoop Whoop! Winner winner chicken dinner!
+
+		cout << "Player " << player << " Winner winner chicken dinner!";
+	}
+}
+
 void updateTotal() {
 
 	vector <int> playerTotal(8);
@@ -208,9 +226,12 @@ void updateTotal() {
 
 			if (cardIs > 10) {
 				playerTotal[x] += 10;
+				winnerWinnerChickenDinner(playerTotal[x], x);
 			}
-			else
+			else {
 				playerTotal[x] += cardIs;
+				winnerWinnerChickenDinner(playerTotal[x], x);
+			}
 
 			cardIndex++;
 
@@ -294,13 +315,6 @@ int anotherCard(bool getNewCard) {
 
 			cout << getSuit(players[x][y]) << getRank(players[x][y]);
 
-			//if (i == currentPlayer){
-			//	cout << getSuit(players[i][players[i].size() - 1]) << getRank(players[i][players[i].size() - 1]);
-			//}
-			//else {
-			//	cout << "      ";
-			//}
-
 		}
 
 		cout << endl;
@@ -349,6 +363,7 @@ int main()
 	}
 
 	startRound();
+
 	initializeNextRound();
 
 	do {
